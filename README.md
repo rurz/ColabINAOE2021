@@ -1,8 +1,12 @@
 # Colaboración INAOE 2021
 
+**Author**: Alejandro R. Urzúa (rurz@github)
+
 **Description**: Working repository for the project "Theoretical and computational research in mathematical methods, quantum mechanics and optics" under the program _Becas de Colaboración INAOE 2021_
 
-**Period**: March-July, 2021
+**Period**: March-August, 2021
+
+**Programming language disclaimer**: This repository is developed as a package in the Julia language to serve as a core for the explaining notebooks inside.
 
 **Content**: 
 
@@ -16,3 +20,11 @@
 
 ##### 5. Wigner-Radon initial amplitude tomography
 
+**Repository structure**:
+
+* Root
+  * _src/_ : Main module and scripts with the core functions
+  * _docs/_ : Dpcumentation, who are PDF's describing the project, the project logs and reports
+  * _notebooks/_ : Interactive notebooks who serve as self-explaining documents for the results achived. Jupyter notebooks (.ipynb) and Pluto.jl notebooks (.jl) are available
+
+(Note: Because we have notebooks, there is a chance to try it directly, without any installation, at a MyBinder.org server)
