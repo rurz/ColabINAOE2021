@@ -1,5 +1,7 @@
 # Colaboración INAOE 2021
 
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gh/rurz/ColabINAOE2021/HEAD?urlpath=lab)
+
 **Author**: Alejandro R. Urzúa (rurz@github)
 
 **Description**: Working repository for the project "Theoretical and computational research in mathematical methods, quantum mechanics and optics" under the program _Becas de Colaboración INAOE 2021_
