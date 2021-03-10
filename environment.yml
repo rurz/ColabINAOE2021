@@ -1,0 +1,9 @@
+name: ColabINAOE2021
+channels:
+  - conda-forge
+dependencies:
+  - matplotlib
+  - numpy
+  - pip
+  - pip:
+      - julia
