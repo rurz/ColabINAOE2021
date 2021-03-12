@@ -1,6 +1,9 @@
 using SpecialPolynomials
 using HypergeometricFunctions
 
+export qc, ql, qk
+export Qc, Ql, Qk
+
 """ MArrays.jl contains the functions and methods for the evolution of initial
 amplitudes in a one-dimensional masses array with harmonic coupling. Here, we
 study different coupling laws, their evolution on time, and their energy content """
