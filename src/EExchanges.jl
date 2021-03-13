@@ -73,6 +73,6 @@ function dqk(n, t, N, V::Vector)
 	return sum(v)
 end
 
-wijk(k, i, j, t, N, V) = qk(i, t, N, V) * dqk(j, t, N, V) - dqk(i, t, N, V) * qk(j, t, N, V)
+wijk(i, j, t, N, V) = qk(i, t, N, V) * dqk(j, t, N, V) - dqk(i, t, N, V) * qk(j, t, N, V)
 
-wijkt(k, i, j, t, N, V) = [wijk(k, i, j, t[τ], N, V) for τ in 1:length(t)]
+wijkt(i, j, t, N, V) = [wijk(i, j, t[τ], N, V) for τ in 1:length(t)]
