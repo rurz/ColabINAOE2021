@@ -54,14 +54,14 @@ end
 "We will use the generator method for obtain the second kind Chebyshev polynomial
 given by the package SpecialPolynomials.jl"
 
-"`gen(n) is the generator array for the Chebyshev's. It retuns a vector of _N + 1_ size with zeros everywhere, except at `gen(end) = 1`, who in turn serves as the generator for the n-th Chebyshev U polynomial."
+"`gen(n)` is the generator array for the Chebyshev's. It retuns a vector of _N + 1_ size with zeros everywhere, except at `gen(end) = 1`, who in turn serves as the generator for the n-th Chebyshev U polynomial."
 function gen(n)
     gen = zeros(Int64, n + 1)
     gen[end] = 1
     return gen
 end
 
-"`chebU(x, n) gives the n-th Chebyshev polynomial U_{n}(x). It relies on the package SpecialPolynomials.jl"
+"`chebU(x, n)` gives the n-th Chebyshev polynomial U_{n}(x). It relies on the package SpecialPolynomials.jl"
 function chebU(x, n)
     return SpecialPolynomials.ChebyshevU(gen(n))(x)
 end
