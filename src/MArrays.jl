@@ -4,23 +4,21 @@ using HypergeometricFunctions
 export qc, ql, qk
 export Qc, Ql, Qk
 
-""" MArrays.jl contains the functions and methods for the evolution of initial
-amplitudes in a one-dimensional masses array with harmonic coupling. Here, we
-study different coupling laws, their evolution on time, and their energy content """
+"MArrays.jl contains the functions and methods for the evolution of initial amplitudes in a one-dimensional masses array with harmonic couplings. Here, we study different coupling laws, their evolution on time, and their energy content (despicted at the EExchanges.jl script)"
 
 # 1. ---------------------------------------------------------------------------
 
-"""### Circular arrangement with equal strength coupling: k_{j}\equiv j \forall j """
+"### Circular arrangement of masses, _m_{j} = 1 ∀j_, for restitution constants _k_{j} = k, ∀j"
 
-"* Amplitude and argument functions"
+"`Ac(N)` gives the normalization term 1/(N + 1)"
 Ac(N) = 1/(N + 1)
+"`ωc(n, M)` gives an angular frequency who depends on position _m_"
 ωc(m, N) = (π * m) * Ac(N)
 
-"* Kernel function"
+"`kec` is the kernel function who provide the evolution in time. It is an oscillatory sinusoidal term who is called as `kec(t, k, m, n, l, N)`"
 kec(t, k, m, n, l, N) = cos(2 * t * (√k) * sin(ωc(m, N))) * cos(2 * ωc(m, N) * (n - l))
 
-"* qc is the main function who returns the amplitude in the _n_ position at the
-_t_ time"
+"`qc` is the circular evolution function who integrates the kernel `kec` and their proper normalization terms `Ac` and `ωc`. For a constant _k_, it is called as `qc(k, n, t, N, V::Vector)`"
 function qc(k, n, t, N, V::Vector)
     u = zeros(Float64,(N + 1, N + 1))
     for m in 0:N
@@ -31,12 +29,7 @@ function qc(k, n, t, N, V::Vector)
     return Ac(N) * sum(u)
 end
 
-"""* Qc is an ad-hoc function to evaluate the matrix evolution consisting on
-a M-dimensional time array T and a N-dimensional initial amplitudes vector V_{0}.
-So, we arrive to a matrix of N \times M. The function requires the value of the
-restitution constant k, the time array T and the initial amplitudes vector V_{0} as
-Qc(k, T:Array, V_{0}:Vector) """
-
+"`Qc` is an ad-hoc function to obtain the matrix evolution from the function `qc`. It evaluates an initial _N + 1_ vector _V_ over a time span _t_. The resulting item is an _(N + 1) × `length(t)`_ matrix. It has middle performance. It is called `Qc(k, t, V::Vector)`"
 function Qc(k, t, V::Vector)
     N = length(V)-1
     T = length(t)
@@ -54,33 +47,34 @@ end
 
 # 2. ---------------------------------------------------------------------------
 
-"""### Lineal array with specific conditions in the coupling matrix """
+"### Lineal arrays with specific conditions in the coupling matrix"
 
-"""##### m_{j} = 1, k_{j} = k, \forall j """
+"##### Case m_{j} = 1, k_{j} = k, ∀j"
 
-""" We will use the generator method for obtain the second kind Chebyshev polynomial
-given by the package SpecialPolynomials.jl """
+"We will use the generator method for obtain the second kind Chebyshev polynomial
+given by the package SpecialPolynomials.jl"
 
-"""* Generator array for the Chebyshev's """
+"`gen(n) is the generator array for the Chebyshev's. It retuns a vector of _N + 1_ size with zeros everywhere, except at `gen(end) = 1`, who in turn serves as the generator for the n-th Chebyshev U polynomial."
 function gen(n)
     gen = zeros(Int64, n + 1)
     gen[end] = 1
     return gen
 end
 
-"""* Chebyshev polynomial U_{n}(x) """
+"`chebU(x, n) gives the n-th Chebyshev polynomial U_{n}(x). It relies on the package SpecialPolynomials.jl"
 function chebU(x, n)
     return SpecialPolynomials.ChebyshevU(gen(n))(x)
 end
 
-""" Phase and zeros of the Chebyshev's """
+"`ϕ(j, N)` gives the j-th phase of the Chebyshev's U_{n}(x)"
 ϕ(j, N) = (π * j) / (N + 2)
+"`y(j, N)` gives the j-th zero of the Chebyshev's U_{n}(x)"
 y(j, N) = cos(ϕ(j, N))
 
-""" Oscillatory term """
+"`oscl` gives the j-th oscillatory evolution terms at time _t_, it is called as `oscl(k, t, j, N)`"
 oscl(k, t, j, N) = cos(2 * t * (√k) * sin(ϕ(j + 1, N)/2))
 
-""" Position dependent normalization """
+"`nc(j, N)` gives a kind of _position dependent_ normalization, since it depends on the j-th term."
 function nc(j, N)
     nc = zeros(N + 1)
     for l in 0:N
@@ -89,15 +83,13 @@ function nc(j, N)
     return sum(nc)
 end
 
-""" Two-dimensional Chebyshev polymonial """
+"`twocheb` provides a compact form to package the multiplication of two mutually excludent Chebyshev's U_{n}(x)×U_{l}(x). It is called as `twocheb(j, l, n, N)`."
 twocheb(j, l, n, N) = chebU(y(j + 1, N), l) * chebU(y(j + 1, N), n)
 
-""" Kernel composition function """
+"`kel` is the composition of the `twocheb` and `oscl` functions. It gives the evolution kernel for the lineal array"
 kel(t, k, n, l, j, N) = (twocheb(j, l, n, N)/nc(j, N)) * oscl(k, t, j, N)
 
-""" q_{l} is the main function for the lineal array evolution, when evaluated
-    for some vector V of size N, it gives a N \times N matrix who is a function
-    time t and position index n """
+"`ql` is the main function for the lineal array evolution, when evaluated for some initial _N + 1_ vector V, it gives a _(N + 1) × (N + 1)_ matrix who is a function time _t_ and position index _n_. It is called `ql(k, n, t, N, V::Vector)`"
 function ql(k, n, t, N, V::Vector)
     nr = [nc(j, N) for j in 0:N]
     tc(j, l, n) = twocheb(j, l, n, N)
@@ -111,8 +103,7 @@ function ql(k, n, t, N, V::Vector)
     return sum(el)
 end
 
-""" Q_{l} is, again, an ad-hoc function for evalute the amplitude evolution
-    function q_{l}(n, t) """
+"`Ql` is an ad-hoc function to obtain the matrix evolution from the function `ql`. It evaluates an initial _N + 1_ vector _V_ over a time span _t_. The resulting item is an _(N + 1) × `length(t)`_ matrix. It has poor performance. It is called `Ql(k, t, V::Vector)`"
 function Ql(k, t, V::Vector)
     dn = length(V)-1
     ell = zeros(Float64, (dn + 1, length(t)))
@@ -126,24 +117,29 @@ end
 
 # 3. Kravchuk ------------------------------------------------------------------
 
-""" Symmetric Kravchuk polynomial """
+"### Evolution in Kravchuk coupling. The coupling coefficients belongs to the basis of the discrete and finite harmonic oscillator of _su(2)_"
+
+"`kp` gives the symmetric Kravchuk polynomial, it is evaluated as `kp(i, j, N)` for i,j ∈ [0,N]"
 function kp(i, j, N)
     if i == j == N
-        return HypergeometricFunctions._₂F₁general2(0, -i, -N, 2)
+        return HypergeometricFunctions._₂F₁general2(0, -i, -N, 2) # issue solved when i == j == N
     else
         return HypergeometricFunctions._₂F₁general2(-j, -i, -N, 2)
     end
 end
 
+"`ω(j, N)` gives a binomial normalization at the j-th term"
 ω(j, N) = 2.0^(-N) * binomial(N, j)
+"`h(i, N)` gives a binomial normalization at the i-th term"
 h(i, N) = 1 / binomial(N, i)
 
+"`oscc(t, n)` is the evolution kernel at time _t_. It is really simple"
 oscc(t, n) = cos(t * sqrt(n))
 
-""" Symmetric Kravchuk function """
+"`kf` is the symmetric Kravchuk function, who is the composition of `ω` and `h`"
 kf(i, j, N) = sqrt(ω(j, N) / h(i, N)) * kp(i, j, N)
 
-""" Kravchuk matrix """
+"`kfm(N)` evaluates the Kravchuk matrix of `kf`. It returns a matrix of _(N + 1)×(N + 1)_ terms who columns are the functions `kf` at index _n_"
 function kfm(N)
     km = zeros(Float64, (N + 1, N + 1))
     for i in 0:N
@@ -154,10 +150,10 @@ function kfm(N)
     return km
 end
 
-""" Two-dimensional Kravchuk function """
+"`k2` gives the two dimensional Kravchuk function, it is called `k2(m, l, n, N)`"
 k2(m, l, n, N) = kf(m, n, N) * kf(l, n, N)
 
-""" q_{k} function """
+"`qk` is the main function for the Kravchuk array evolution, when evaluated for some initial _N + 1_ vector V, it gives a _(N + 1) × (N + 1)_ matrix who is a function time _t_ and position index _n_. It is called `qk(m, t, N, V::Vector)`"
 function qk(m, t, N, V::Vector)
     u = zeros(Float64, (N + 1, N + 1))
     for l in  0:N
@@ -168,7 +164,7 @@ function qk(m, t, N, V::Vector)
     return sum(u)
 end
 
-""" Q_{k} is the ad-hoc function for straight-forward evaluation """
+"`Qk` is an ad-hoc function to obtain the matrix evolution from the function `qk`. It evaluates an initial _N + 1_ vector _V_ over a time span _t_. The resulting item is an _(N + 1) × `length(t)`_ matrix. It has good performance. It is called `Qk(t, V::Vector)`"
 function Qk(t, V::Vector)
     dn = length(V)-1
     T = length(t)
